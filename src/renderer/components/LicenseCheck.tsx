@@ -19,7 +19,7 @@ import {
 } from '../redux/AppUserSlice';
 import { SubscriptionStatus, TenantUser } from '../models/models';
 import LoginFooter from './LoginFooter';
-import teraphoneLogo from '../../../assets/images/teraphone-logo-and-name-vertical.svg';
+import teraphoneLogo from '../../images/teraphone-logo-and-name-vertical.svg';
 
 type UpdateTrialResponse = {
   success: boolean;

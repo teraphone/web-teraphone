@@ -6,7 +6,7 @@ import { useAppDispatch } from '../redux/hooks';
 import { setMSAuthResult } from '../redux/AuthSlice';
 import MSSignInLoadingButton from './MSSignInLoadingButton';
 import LoginFooter from './LoginFooter';
-import teraphoneLogo from '../../../assets/images/teraphone-logo-and-name-vertical.svg';
+import teraphoneLogo from '../../images/teraphone-logo-and-name-vertical.svg';
 
 function MSLogin() {
   const [authPending, setAuthPending] = React.useState(false);

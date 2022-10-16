@@ -1,7 +1,7 @@
 import { Icon, useTheme } from '@mui/material';
 import LoadingButton from '@mui/lab/LoadingButton';
 import { SxProps } from '@mui/system';
-import microsoftLogo from '../../../assets/images/microsoft-logo.svg';
+import microsoftLogo from '../../images/microsoft-logo.svg';
 
 function MSSignInLoadingButton({
   children = 'Sign in with Microsoft',
