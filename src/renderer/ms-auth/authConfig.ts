@@ -2,7 +2,7 @@ export const BASE_URI =
   process.env.NODE_ENV === 'development'
     ? 'http://localhost:3000'
     : 'https://web.teraphone.app';
-export const REDIRECT_URI = BASE_URI;
+export const REDIRECT_URI = BASE_URI + '/login'; // change redirect uri in azure app registration
 export const LOGOUT_REDIRECT_URI = BASE_URI;
 
 export const msalConfig = {
