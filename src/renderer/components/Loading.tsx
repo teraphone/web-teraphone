@@ -1,6 +1,5 @@
 /* eslint-disable no-console */
 import * as React from 'react';
-import { useNavigate } from 'react-router-dom';
 import { ArrowBackIos } from '@mui/icons-material';
 import {
   Alert,
@@ -15,6 +14,7 @@ import {
   selectMSAuthResult,
   setAccessToken,
   setAccessTokenExpiration,
+  setMSAuthResult,
   setRefreshToken,
   setRefreshTokenExpiration,
 } from '../redux/AuthSlice';
@@ -22,6 +22,10 @@ import { signIn } from '../redux/Firebase';
 import { setTenantUser, setSubscription } from '../redux/AppUserSlice';
 import { TenantUser, Subscription } from '../models/models';
 import LoginFooter from './LoginFooter';
+import { InteractionStatus } from '@azure/msal-browser';
+import { useIsAuthenticated, useMsal } from '@azure/msal-react';
+import { teraphoneAppScopes } from '../ms-auth/authConfig';
+import { useNavigate, useParams } from 'react-router-dom';
 
 type LoginResponse = {
   success: boolean;
@@ -37,44 +41,50 @@ type LoginResponse = {
 const Loading = () => {
   const dispatch = useAppDispatch();
   const navigate = useNavigate();
-  const msAuthResult = useAppSelector(selectMSAuthResult);
+  const { inProgress, instance } = useMsal();
+  const isAuthenticated = useIsAuthenticated();
   const [loginError, setLoginError] = React.useState('');
+  const queryParams = useParams();
+  const { accessToken: msAccessToken } = useAppSelector(selectMSAuthResult);
 
-  const handleLogin = React.useCallback(async () => {
-    let success = false;
-    const params: RequestInit = {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({ msAccessToken: msAuthResult.accessToken }),
-    };
-    try {
-      console.log('login with params', params);
-      const response = await window.fetch(
-        'https://api.teraphone.app/v1/public/login',
-        params
-      );
-      if (response.ok) {
-        const data: LoginResponse = await response.json();
-        dispatch(setAccessToken(data.accessToken));
-        dispatch(setAccessTokenExpiration(data.accessTokenExpiration));
-        dispatch(setRefreshToken(data.refreshToken));
-        dispatch(setRefreshTokenExpiration(data.refreshTokenExpiration));
-        await signIn(data.firebaseAuthToken);
-        dispatch(setTenantUser(data.user));
-        dispatch(setSubscription(data.subscription));
-        success = true;
-        console.log('login successful');
-      } else {
-        setLoginError('Login Failed: could not find your Teams account.');
+  const handleLogin = React.useCallback(
+    async (token: string) => {
+      let success = false;
+      const params: RequestInit = {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ msAccessToken: token }),
+      };
+      try {
+        console.log('login with params', params);
+        const response = await window.fetch(
+          'https://api.teraphone.app/v1/public/login',
+          params
+        );
+        if (response.ok) {
+          const data: LoginResponse = await response.json();
+          dispatch(setAccessToken(data.accessToken));
+          dispatch(setAccessTokenExpiration(data.accessTokenExpiration));
+          dispatch(setRefreshToken(data.refreshToken));
+          dispatch(setRefreshTokenExpiration(data.refreshTokenExpiration));
+          await signIn(data.firebaseAuthToken);
+          dispatch(setTenantUser(data.user));
+          dispatch(setSubscription(data.subscription));
+          success = true;
+          console.log('login successful');
+        } else {
+          setLoginError('Login Failed: could not find your Teams account.');
+        }
+      } catch (error) {
+        console.log(error);
       }
-    } catch (error) {
-      console.log(error);
-    }
 
-    return success;
-  }, [dispatch, msAuthResult.accessToken]);
+      return success;
+    },
+    [dispatch]
+  );
 
   const LoginError = () => {
     if (loginError) {
@@ -88,15 +98,44 @@ const Loading = () => {
   };
 
   React.useEffect(() => {
-    handleLogin()
-      .then((success) => {
-        if (success) {
-          navigate('/license-check');
-        }
-        return true;
-      })
-      .catch(console.error);
-  }, [handleLogin, navigate]);
+    if (inProgress === InteractionStatus.None) {
+      if (!isAuthenticated) {
+        const urlObj = {
+          pathname: '/',
+          query: { ...queryParams },
+        };
+        console.log('not authenticated, redirecting to:', urlObj);
+        // navigate(urlObj);
+      } else {
+        console.log('is authenticated');
+        instance
+          .acquireTokenSilent({ scopes: teraphoneAppScopes })
+          .then((authResult) => dispatch(setMSAuthResult(authResult)))
+          .catch(console.error);
+      }
+    }
+  }, [
+    dispatch,
+    handleLogin,
+    inProgress,
+    instance,
+    isAuthenticated,
+    navigate,
+    queryParams,
+  ]);
+
+  React.useEffect(() => {
+    if (msAccessToken) {
+      handleLogin(msAccessToken)
+        .then((success) => {
+          if (success) {
+            navigate('/license-check');
+          }
+          return true;
+        })
+        .catch(console.error);
+    }
+  }, [handleLogin, msAccessToken, navigate]);
 
   return (
     <Container

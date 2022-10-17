@@ -1,4 +1,7 @@
-export const BASE_URI = 'http://localhost:3000';
+export const BASE_URI =
+  process.env.NODE_ENV === 'development'
+    ? 'http://localhost:3000'
+    : 'https://web.teraphone.app';
 export const REDIRECT_URI = BASE_URI;
 export const LOGOUT_REDIRECT_URI = BASE_URI;
 
@@ -10,6 +13,21 @@ export const msalConfig = {
     postLogoutRedirectUri: LOGOUT_REDIRECT_URI,
   },
 };
+
+// export const teraphoneAppScopes = [
+//   'api://9ef60b2f-3246-4390-8e17-a57478e7ec45/User.Read',
+//   'User.Read',
+//   'User.ReadBasic.All',
+//   'Team.ReadBasic.All',
+//   'openid',
+//   'profile',
+//   'email',
+//   'offline_access',
+// ];
+
+export const teraphoneAppScopes = [
+  'api://9ef60b2f-3246-4390-8e17-a57478e7ec45/User.Read',
+];
 
 export const loginRequest = {
   scopes: ['api://9ef60b2f-3246-4390-8e17-a57478e7ec45/User.Read'],
