@@ -9,6 +9,7 @@ import { store } from './redux/store';
 import theme from './styles/theme';
 import LicenseCheck from './components/LicenseCheck';
 import TrialExpired from './components/TrialExpired';
+import './App.css';
 
 export default function App() {
   return (
