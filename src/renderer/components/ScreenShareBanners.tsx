@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 import * as React from 'react';
 import {
   Box,
@@ -19,14 +20,18 @@ import {
   validDataURL,
 } from '../redux/ScreenShareSlice';
 import { useAppDispatch, useAppSelector } from '../redux/hooks';
-import { SerializedDesktopCapturerSource } from '../global';
 
 function ScreenShareBanner(props: {
-  source: SerializedDesktopCapturerSource;
+  // source: SerializedDesktopCapturerSource;
+  // todo: add back source prop
   removeSource: ActionCreatorWithPayload<string, string>;
 }) {
-  const { source, removeSource } = props;
-  const { id, name, appIconDataURL } = source;
+  const { removeSource } = props;
+  const { id, name, appIconDataURL } = {
+    id: 'placeholder-id',
+    name: 'placeholder-name',
+    appIconDataURL: 'placeholder-appIconDataURL',
+  };
   const dispatch = useAppDispatch();
   const isValidIcon = appIconDataURL ? validDataURL(appIconDataURL) : false;
   const avatarDim = '24px';
@@ -106,11 +111,13 @@ function ScreenShareBanners() {
   const windows = useAppSelector(selectWindows);
 
   const screenBanners = Object.entries(screens).map(([id, source]) => (
-    <ScreenShareBanner key={id} source={source} removeSource={removeScreen} />
+    // todo: add back source prop
+    <ScreenShareBanner key={id} removeSource={removeScreen} />
   ));
 
   const windowBanners = Object.entries(windows).map(([id, source]) => (
-    <ScreenShareBanner key={id} source={source} removeSource={removeWindow} />
+    // todo: add back source prop
+    <ScreenShareBanner key={id} removeSource={removeWindow} />
   ));
 
   return (

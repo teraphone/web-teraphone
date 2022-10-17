@@ -1,9 +1,9 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 import type { RootState } from './store';
-import type { SerializedDesktopCapturerSource } from '../global';
 
 export type ScreenSource = {
-  [id: string]: SerializedDesktopCapturerSource;
+  [id: string]: MediaStream; // todo: this might not work
 };
 
 type ScreenShareState = {

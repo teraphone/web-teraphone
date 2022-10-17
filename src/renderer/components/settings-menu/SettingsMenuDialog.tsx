@@ -55,7 +55,7 @@ function AccountPanel() {
   const handleSignOut = React.useCallback(() => {
     room?.disconnect().catch(console.error);
     dispatch(signedOut);
-    window.electron.ipcRenderer.logout().catch(console.error);
+    // todo: handle msal signout
     dispatch(setIsVisible(false));
     navigate('/?signedOut');
   }, [dispatch, navigate, room]);
