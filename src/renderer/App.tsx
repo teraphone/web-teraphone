@@ -10,29 +10,8 @@ import theme from './styles/theme';
 import LicenseCheck from './components/LicenseCheck';
 import TrialExpired from './components/TrialExpired';
 import './App.css';
-import { msalConfig } from './ms-auth/authConfig';
-import {
-  PublicClientApplication,
-  EventType,
-  EventMessage,
-  AuthenticationResult,
-} from '@azure/msal-browser';
 import MsalAuthProvider from './ms-auth/MsalAuthProvider';
-
-export const msalInstance = new PublicClientApplication(msalConfig);
-
-const accounts = msalInstance.getAllAccounts();
-if (accounts.length > 0) {
-  msalInstance.setActiveAccount(accounts[0]);
-}
-
-msalInstance.addEventCallback((event: EventMessage) => {
-  if (event.eventType === EventType.LOGIN_SUCCESS && event.payload) {
-    const payload = event.payload as AuthenticationResult;
-    const account = payload.account;
-    msalInstance.setActiveAccount(account);
-  }
-});
+import { msalInstance } from './ms-auth/authClient';
 
 export default function App() {
   return (
