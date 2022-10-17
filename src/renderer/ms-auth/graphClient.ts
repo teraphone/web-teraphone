@@ -4,7 +4,7 @@ import {
   AuthenticationProviderOptions,
   Client,
 } from '@microsoft/microsoft-graph-client';
-import { AuthenticationResult } from '@azure/msal-common';
+import { msalInstance } from './authClient';
 
 export const b64toBlob = async (
   b64Data: string,
@@ -56,10 +56,10 @@ class GraphAuthProvider implements AuthenticationProvider {
     if (authenticationProviderOptions?.scopes) {
       this.scopes = authenticationProviderOptions.scopes;
     }
-    // todo: this needs rework
-    // const authResult = await window.electron.ipcRenderer.getAuth(this.scopes);
-    const authResult = {} as AuthenticationResult; // todo: can't just do this
     try {
+      const authResult = await msalInstance.acquireTokenSilent({
+        scopes: this.scopes,
+      });
       if (authResult) {
         return authResult.accessToken;
       }
