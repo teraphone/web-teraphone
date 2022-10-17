@@ -10,23 +10,53 @@ import theme from './styles/theme';
 import LicenseCheck from './components/LicenseCheck';
 import TrialExpired from './components/TrialExpired';
 import './App.css';
+import { msalConfig } from './ms-auth/authConfig';
+import { MsalProvider } from '@azure/msal-react';
+import {
+  PublicClientApplication,
+  EventType,
+  EventMessage,
+  AuthenticationResult,
+} from '@azure/msal-browser';
+import { useNavigate } from 'react-router-dom';
+import { CustomNavigationClient } from './ms-auth/NavigationClient';
+
+export const msalInstance = new PublicClientApplication(msalConfig);
+
+const accounts = msalInstance.getAllAccounts();
+if (accounts.length > 0) {
+  msalInstance.setActiveAccount(accounts[0]);
+}
+
+msalInstance.addEventCallback((event: EventMessage) => {
+  if (event.eventType === EventType.LOGIN_SUCCESS && event.payload) {
+    const payload = event.payload as AuthenticationResult;
+    const account = payload.account;
+    msalInstance.setActiveAccount(account);
+  }
+});
 
 export default function App() {
+  const navigate = useNavigate();
+  const navigationClient = new CustomNavigationClient(navigate);
+  msalInstance.setNavigationClient(navigationClient);
   return (
-    <ThemeProvider theme={theme}>
-      <Provider store={store}>
-        <RoomProvider>
-          <Router>
-            <Routes>
-              <Route path="/" element={<MSLogin />} />
-              <Route path="/loading" element={<Loading />} />
-              <Route path="/license-check" element={<LicenseCheck />} />
-              <Route path="/trial-expired" element={<TrialExpired />} />
-              <Route path="/home" element={<Home />} />
-            </Routes>
-          </Router>
-        </RoomProvider>
-      </Provider>
-    </ThemeProvider>
+    <MsalProvider instance={msalInstance}>
+      <ThemeProvider theme={theme}>
+        <Provider store={store}>
+          <RoomProvider>
+            <Router>
+              <Routes>
+                <Route path="/" element={<MSLogin />} />
+                <Route path="/loading" element={<Loading />} />
+                <Route path="/license-check" element={<LicenseCheck />} />
+                <Route path="/trial-expired" element={<TrialExpired />} />
+                <Route path="/home" element={<Home />} />
+              </Routes>
+            </Router>
+          </RoomProvider>
+        </Provider>
+      </ThemeProvider>
+    </MsalProvider>
   );
 }
