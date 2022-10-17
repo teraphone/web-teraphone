@@ -5,14 +5,14 @@ import { CustomNavigationClient } from './NavigationClient';
 
 const MsalAuthProvider = (props: {
   children: React.ReactNode;
-  psa: PublicClientApplication;
+  pca: PublicClientApplication;
 }) => {
-  const { children, psa } = props;
+  const { children, pca } = props;
   const navigate = useNavigate();
   const navigationClient = new CustomNavigationClient(navigate);
-  psa.setNavigationClient(navigationClient);
+  pca.setNavigationClient(navigationClient);
 
-  return <MsalProvider instance={psa}>{children}</MsalProvider>;
+  return <MsalProvider instance={pca}>{children}</MsalProvider>;
 };
 
 export default MsalAuthProvider;

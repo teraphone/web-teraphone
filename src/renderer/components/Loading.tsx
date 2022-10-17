@@ -126,6 +126,7 @@ const Loading = () => {
 
   React.useEffect(() => {
     if (msAccessToken) {
+      console.log('msAccessToken:', msAccessToken);
       handleLogin(msAccessToken)
         .then((success) => {
           if (success) {

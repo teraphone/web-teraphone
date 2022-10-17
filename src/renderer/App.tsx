@@ -40,7 +40,7 @@ export default function App() {
       <Provider store={store}>
         <RoomProvider>
           <Router>
-            <MsalAuthProvider psa={msalInstance}>
+            <MsalAuthProvider pca={msalInstance}>
               <Routes>
                 <Route path="/" element={<MSLogin />} />
                 <Route path="/loading" element={<Loading />} />
