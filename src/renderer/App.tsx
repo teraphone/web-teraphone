@@ -11,15 +11,13 @@ import LicenseCheck from './components/LicenseCheck';
 import TrialExpired from './components/TrialExpired';
 import './App.css';
 import { msalConfig } from './ms-auth/authConfig';
-import { MsalProvider } from '@azure/msal-react';
 import {
   PublicClientApplication,
   EventType,
   EventMessage,
   AuthenticationResult,
 } from '@azure/msal-browser';
-import { useNavigate } from 'react-router-dom';
-import { CustomNavigationClient } from './ms-auth/NavigationClient';
+import MsalAuthProvider from './ms-auth/MsalAuthProvider';
 
 export const msalInstance = new PublicClientApplication(msalConfig);
 
@@ -37,15 +35,12 @@ msalInstance.addEventCallback((event: EventMessage) => {
 });
 
 export default function App() {
-  const navigate = useNavigate();
-  const navigationClient = new CustomNavigationClient(navigate);
-  msalInstance.setNavigationClient(navigationClient);
   return (
-    <MsalProvider instance={msalInstance}>
-      <ThemeProvider theme={theme}>
-        <Provider store={store}>
-          <RoomProvider>
-            <Router>
+    <ThemeProvider theme={theme}>
+      <Provider store={store}>
+        <RoomProvider>
+          <Router>
+            <MsalAuthProvider psa={msalInstance}>
               <Routes>
                 <Route path="/" element={<MSLogin />} />
                 <Route path="/loading" element={<Loading />} />
@@ -53,10 +48,10 @@ export default function App() {
                 <Route path="/trial-expired" element={<TrialExpired />} />
                 <Route path="/home" element={<Home />} />
               </Routes>
-            </Router>
-          </RoomProvider>
-        </Provider>
-      </ThemeProvider>
-    </MsalProvider>
+            </MsalAuthProvider>
+          </Router>
+        </RoomProvider>
+      </Provider>
+    </ThemeProvider>
   );
 }

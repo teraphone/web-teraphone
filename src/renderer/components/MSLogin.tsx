@@ -9,7 +9,7 @@ const MSLogin = () => {
   const isAuthenticated = useIsAuthenticated();
   const navigate = useNavigate();
   const { destination, ...query } = useParams();
-  const targetPage = destination ? (destination as string) : '/';
+  const targetPage = destination ? (destination as string) : '/loading';
   const params = Object.entries(query)
     .map(([key, value]) => `${key}=${value}`)
     .join('&');
