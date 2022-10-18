@@ -99,11 +99,22 @@ listenerMiddleware.startListening({
 
 listenerMiddleware.startListening({
   actionCreator: clearUserOnlineRTInfo,
-  effect: (action, _listenerApi) => {
+  effect: (action, listenerApi) => {
+    const state = listenerApi.getState() as RootState;
+    const appUserId = state.appUser.tenantUser.oid;
     const { teamId, userId } = action.payload;
-    const nodeRef = ref(database, `online/${teamId}/${userId}`);
-    console.log('clearing Online RT node:', nodeRef);
-    remove(nodeRef); // await?
+    if (userId !== appUserId) {
+      const nodeRef = ref(database, `online/${teamId}/${userId}`);
+      console.log('clearing Online RT node:', nodeRef);
+      remove(nodeRef); // await?
+    } else {
+      listenerApi.dispatch(
+        pushUserOnlineRTInfo({
+          teamId,
+          userId: appUserId,
+        })
+      );
+    }
   },
 });
 
