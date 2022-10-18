@@ -83,7 +83,7 @@ const ShareScreenButton = (props: {
           variant="contained"
           color={isSharing ? 'success' : 'primary'}
         >
-          Screens
+          Screen
         </LoadingButton>
       </span>
     </Tooltip>
