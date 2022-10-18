@@ -98,6 +98,9 @@ export const screenShareSlice = createSlice({
     setPickerVisible: (state, action: PayloadAction<boolean>) => {
       state.pickerVisible = action.payload;
     },
+    setIsSharing: (state, action: PayloadAction<boolean>) => {
+      state.isSharing = action.payload;
+    },
   },
 });
 
@@ -108,6 +111,7 @@ export const {
   removeWindow,
   removeSource,
   setPickerVisible,
+  setIsSharing,
 } = screenShareSlice.actions;
 
 export const selectScreens = (state: RootState) => state.screenShare.screens;

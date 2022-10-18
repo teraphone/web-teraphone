@@ -27,9 +27,10 @@ import {
 } from '../redux/ConnectionStatusSlice';
 import { useAppSelector, useAppDispatch } from '../redux/hooks';
 import { selectCurrentRoom } from '../redux/CurrentRoomSlice';
-import { selectIsSharing, setPickerVisible } from '../redux/ScreenShareSlice';
+import { selectIsSharing, setIsSharing } from '../redux/ScreenShareSlice';
 import '../lib/ExtendedLocalParticipant';
 import useVideoItems from '../hooks/useVideoItems';
+import { ScreenShareCaptureOptions, VideoPresets } from 'livekit-client';
 
 const ShareCameraButton = (props: {
   status: ConnectionStatus;
@@ -154,9 +155,23 @@ function CurentRoomControls() {
     }
   }, [dispatch, isCameraShare, room?.localParticipant, setUpVideoTrack]);
 
-  const handleShareScreenClick = React.useCallback(() => {
-    dispatch(setPickerVisible(true));
-  }, [dispatch]);
+  const handleShareScreenClick = React.useCallback(async () => {
+    if (room?.localParticipant) {
+      try {
+        const localTrackPub =
+          await room?.localParticipant.setScreenShareEnabled(!isScreenShare, {
+            audio: false,
+            resolution: VideoPresets.h2160,
+          } as ScreenShareCaptureOptions);
+        dispatch(setIsSharing(!isScreenShare));
+        if (!isScreenShare && localTrackPub) {
+          setUpVideoTrack(localTrackPub, room.localParticipant);
+        }
+      } catch (error) {
+        console.error(error);
+      }
+    }
+  }, [dispatch, isScreenShare, room?.localParticipant, setUpVideoTrack]);
 
   const handleDisconnectClick = React.useCallback(async () => {
     if (!room) {
