@@ -52,6 +52,7 @@ function WindowPortal(props: {
       );
 
       if (windowRef.current) {
+        windowRef.current.document.title = title;
         windowRef.current.document.body.appendChild(containerRef.current);
         windowRef.current.document.body.style.margin = '0';
         windowRef.current.onunload = () => {
