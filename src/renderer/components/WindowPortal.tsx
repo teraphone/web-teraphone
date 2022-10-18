@@ -48,7 +48,7 @@ function WindowPortal(props: {
       windowRef.current = window.open(
         'about:blank',
         id,
-        `width=${width},height=${height},title=${title}`
+        `width=${width},height=${height},title=${title},location=0`
       );
 
       if (windowRef.current) {
