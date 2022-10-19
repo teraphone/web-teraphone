@@ -1,7 +1,4 @@
-export const BASE_URI =
-  process.env.NODE_ENV === 'development'
-    ? 'http://localhost:3000'
-    : 'https://web.teraphone.app';
+export const BASE_URI = location.origin;
 export const REDIRECT_URI = BASE_URI + '/home';
 export const LOGOUT_REDIRECT_URI = BASE_URI;
 
