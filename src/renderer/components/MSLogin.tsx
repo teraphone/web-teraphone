@@ -18,12 +18,7 @@ const MSLogin = () => {
   useEffect(() => {
     if (inProgress === InteractionStatus.None) {
       if (!isAuthenticated) {
-        instance
-          .loginRedirect({
-            ...loginRequest,
-            redirectStartPage: targetUrl,
-          })
-          .catch(console.error);
+        instance.loginPopup(loginRequest).catch(console.error);
       } else {
         const urlObj = { pathname: targetPage, query };
         console.log('redirecting to:', urlObj);
