@@ -7,7 +7,7 @@ import {
   BatchResponseContent,
 } from '@microsoft/microsoft-graph-client';
 import type { RootState } from './store';
-import msGraphClient, { b64toBlob, blobToBase64 } from '../api/graphClient';
+import msGraphClient, { b64toBlob, blobToBase64 } from '../ms-auth/graphClient';
 
 export type TeamAvatars = { [teamId: string]: string };
 

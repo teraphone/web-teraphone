@@ -9,6 +9,9 @@ import { store } from './redux/store';
 import theme from './styles/theme';
 import LicenseCheck from './components/LicenseCheck';
 import TrialExpired from './components/TrialExpired';
+import './App.css';
+import MsalAuthProvider from './ms-auth/MsalAuthProvider';
+import { msalInstance } from './ms-auth/authClient';
 
 export default function App() {
   return (
@@ -16,13 +19,15 @@ export default function App() {
       <Provider store={store}>
         <RoomProvider>
           <Router>
-            <Routes>
-              <Route path="/" element={<MSLogin />} />
-              <Route path="/loading" element={<Loading />} />
-              <Route path="/license-check" element={<LicenseCheck />} />
-              <Route path="/trial-expired" element={<TrialExpired />} />
-              <Route path="/home" element={<Home />} />
-            </Routes>
+            <MsalAuthProvider pca={msalInstance}>
+              <Routes>
+                <Route path="/" element={<MSLogin />} />
+                <Route path="/loading" element={<Loading />} />
+                <Route path="/license-check" element={<LicenseCheck />} />
+                <Route path="/trial-expired" element={<TrialExpired />} />
+                <Route path="/home" element={<Home />} />
+              </Routes>
+            </MsalAuthProvider>
           </Router>
         </RoomProvider>
       </Provider>

@@ -74,7 +74,7 @@ const useAxiosPrivate = () => {
 
         return config;
       },
-      // eslint-disable-next-line promise/no-promise-in-callback
+
       (error) => Promise.reject(error)
     );
 

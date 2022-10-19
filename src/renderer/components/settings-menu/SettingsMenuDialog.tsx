@@ -21,6 +21,7 @@ import { selectAppUser } from '../../redux/AppUserSlice';
 import { selectUserAvatars } from '../../redux/AvatarSlice';
 import ConnectionTestPanel from './ConnectionTestPanel';
 import DevicesPanel from './DevicesPanel';
+import { useMsal } from '@azure/msal-react';
 
 function SettingsMenuTabPanel(props: {
   children: React.ReactNode;
@@ -51,14 +52,19 @@ function AccountPanel() {
   const { room } = useRoom();
   const { tenantUser: user } = useAppSelector(selectAppUser);
   const userAvatars = useAppSelector(selectUserAvatars);
+  const { instance } = useMsal();
 
-  const handleSignOut = React.useCallback(() => {
-    room?.disconnect().catch(console.error);
-    dispatch(signedOut);
-    window.electron.ipcRenderer.logout().catch(console.error);
-    dispatch(setIsVisible(false));
-    navigate('/?signedOut');
-  }, [dispatch, navigate, room]);
+  const handleSignOut = React.useCallback(async () => {
+    try {
+      await room?.disconnect();
+      dispatch(signedOut);
+      await instance.logout();
+      dispatch(setIsVisible(false));
+      navigate('/?signedOut');
+    } catch (error) {
+      console.error(error);
+    }
+  }, [dispatch, navigate, room, instance]);
 
   return (
     <>

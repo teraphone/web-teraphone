@@ -151,7 +151,6 @@ function BottomControls() {
   }, [dispatch]);
 
   const handleInfoClick = React.useCallback(async () => {
-    window.electron.ipcRenderer.myPing();
     const constraints = navigator.mediaDevices.getSupportedConstraints();
     console.log('constraints:', constraints);
     navigator.mediaDevices
