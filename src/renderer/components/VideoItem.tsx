@@ -1,5 +1,4 @@
 /* eslint-disable no-console */
-/* eslint-disable react/require-default-props */
 
 import { RemoteTrackPublication, LocalTrackPublication } from 'livekit-client';
 import * as React from 'react';
@@ -72,10 +71,7 @@ const VideoItem = ({ videoTrack, isLocal }: VideoItemProps) => {
     return () => {};
   }, [handleLoadedMetadata]);
 
-  return (
-    // eslint-disable-next-line jsx-a11y/media-has-caption
-    <video ref={videoRef} style={style} />
-  );
+  return <video ref={videoRef} style={style} />;
 };
 
 export default VideoItem;
