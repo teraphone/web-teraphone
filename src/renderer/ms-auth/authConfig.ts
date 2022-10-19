@@ -1,14 +1,7 @@
-let envDynamicUri: string;
-if (process.env.CF_PAGES && process.env.CF_PAGES_URL) {
-  envDynamicUri = process.env.CF_PAGES_URL;
-} else {
-  envDynamicUri =
-    process.env.NODE_ENV === 'development'
-      ? 'http://localhost:3000'
-      : 'https://web.teraphone.app';
-}
-
-export const BASE_URI = envDynamicUri;
+export const BASE_URI =
+  process.env.NODE_ENV === 'development'
+    ? 'http://localhost:3000'
+    : 'https://web.teraphone.app';
 export const REDIRECT_URI = BASE_URI + '/home';
 export const LOGOUT_REDIRECT_URI = BASE_URI;
 
