@@ -10,4 +10,5 @@ html,
 body,
 body > #root {
   height: 100%;
+  min-width: 518px;
 }
