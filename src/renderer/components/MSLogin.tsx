@@ -39,16 +39,6 @@ const MSLogin = () => {
     targetUrl,
   ]);
 
-  useEffect(() => {
-    if (inProgress === InteractionStatus.None) {
-      if (isAuthenticated) {
-        const urlObj = { pathname: targetPage, query };
-        console.log('redirecting to:', urlObj);
-        navigate(urlObj);
-      }
-    }
-  }, [inProgress, isAuthenticated, navigate, query, targetPage]);
-
   const handleAuthClick = useCallback(async () => {
     if (inProgress === InteractionStatus.None) {
       if (!isAuthenticated) {
