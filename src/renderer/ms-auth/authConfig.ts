@@ -9,6 +9,9 @@ export const msalConfig = {
     redirectUri: REDIRECT_URI,
     postLogoutRedirectUri: LOGOUT_REDIRECT_URI,
   },
+  cache: {
+    cacheLocation: 'localStorage',
+  },
 };
 
 export const teraphoneAppScopes = [
