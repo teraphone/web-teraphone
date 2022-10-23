@@ -48,10 +48,11 @@ function WindowPortal(props: {
       windowRef.current = window.open(
         'about:blank',
         id,
-        `width=${width},height=${height},title=${title}`
+        `width=${width},height=${height},title=${title},location=0`
       );
 
       if (windowRef.current) {
+        windowRef.current.document.title = title;
         windowRef.current.document.body.appendChild(containerRef.current);
         windowRef.current.document.body.style.margin = '0';
         windowRef.current.onunload = () => {

@@ -1,9 +1,9 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 import type { RootState } from './store';
-import type { SerializedDesktopCapturerSource } from '../global';
 
 export type ScreenSource = {
-  [id: string]: SerializedDesktopCapturerSource;
+  [id: string]: MediaStream; // todo: this might not work
 };
 
 type ScreenShareState = {
@@ -98,6 +98,9 @@ export const screenShareSlice = createSlice({
     setPickerVisible: (state, action: PayloadAction<boolean>) => {
       state.pickerVisible = action.payload;
     },
+    setIsSharing: (state, action: PayloadAction<boolean>) => {
+      state.isSharing = action.payload;
+    },
   },
 });
 
@@ -108,6 +111,7 @@ export const {
   removeWindow,
   removeSource,
   setPickerVisible,
+  setIsSharing,
 } = screenShareSlice.actions;
 
 export const selectScreens = (state: RootState) => state.screenShare.screens;

@@ -4,7 +4,6 @@
   "private": true,
   "dependencies": {
     "@azure/msal-browser": "^2.30.0",
-    "@azure/msal-node": "^1.14.2",
     "@azure/msal-react": "^1.4.9",
     "@emotion/cache": "^11.7.1",
     "@emotion/react": "^11.7.1",
@@ -27,7 +26,6 @@
     "@typescript-eslint/parser": "^5.35.1",
     "axios": "^0.26.0",
     "eslint-config-airbnb-base": "^15.0.0",
-    "eslint-config-erb": "^4.0.3",
     "eslint-import-resolver-typescript": "^3.5.0",
     "eslint-import-resolver-webpack": "^0.13.2",
     "eslint-plugin-compat": "^4.0.2",

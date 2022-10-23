@@ -1,66 +1,68 @@
-/* eslint-disable no-console */
-import * as React from 'react';
-import { useNavigate, useSearchParams } from 'react-router-dom';
-import { Alert, Box, Container, CssBaseline } from '@mui/material';
-import { useAppDispatch } from '../redux/hooks';
-import { setMSAuthResult } from '../redux/AuthSlice';
+import { useIsAuthenticated, useMsal } from '@azure/msal-react';
+import { InteractionStatus } from '@azure/msal-browser';
+import { loginRequest, BASE_URI } from '../ms-auth/authConfig';
+import { useEffect, useCallback } from 'react';
+import { useNavigate, useParams } from 'react-router-dom';
+import { Box, Container, CssBaseline } from '@mui/material';
 import MSSignInLoadingButton from './MSSignInLoadingButton';
 import LoginFooter from './LoginFooter';
 import teraphoneLogo from '../../images/teraphone-logo-and-name-vertical.svg';
 
-function MSLogin() {
-  const [authPending, setAuthPending] = React.useState(false);
-  const [errorMessage, setErrorMessage] = React.useState('');
-  const dispatch = useAppDispatch();
+const MSLogin = () => {
+  const { instance, inProgress } = useMsal();
+  const isAuthenticated = useIsAuthenticated();
   const navigate = useNavigate();
-  const [searchParams] = useSearchParams();
-  const signedOut = searchParams.has('signedOut');
+  const { destination, ...query } = useParams();
+  const targetPage = destination ? (destination as string) : '/loading';
+  const params = Object.entries(query)
+    .map(([key, value]) => `${key}=${value}`)
+    .join('&');
+  const targetUrl = BASE_URI + targetPage + '?' + params;
 
-  const handleAuthSilent = React.useCallback(async () => {
-    try {
-      setAuthPending(true);
-      const authResult = await window.electron.ipcRenderer.authSilent();
-      if (authResult) {
-        dispatch(setMSAuthResult(authResult));
-        setAuthPending(false);
-        navigate('/loading');
+  useEffect(() => {
+    if (inProgress === InteractionStatus.None) {
+      if (!isAuthenticated) {
+        instance.acquireTokenSilent(loginRequest).catch(console.error);
       } else {
-        setAuthPending(false);
+        const urlObj = { pathname: targetPage, query };
+        console.log('redirecting to:', urlObj);
+        navigate(urlObj);
       }
-    } catch (error) {
-      setAuthPending(false);
-      console.error(error);
     }
-  }, [dispatch, navigate]);
+  }, [
+    inProgress,
+    instance,
+    isAuthenticated,
+    navigate,
+    query,
+    targetPage,
+    targetUrl,
+  ]);
 
-  React.useEffect(() => {
-    if (!signedOut) {
-      handleAuthSilent();
-    }
-  }, [handleAuthSilent, signedOut]);
-
-  const handleAuthClick = React.useCallback(async () => {
-    try {
-      setErrorMessage('');
-      setAuthPending(true);
-      const authResult = await window.electron.ipcRenderer.auth();
-      console.log('authResult', authResult);
-      if (authResult) {
-        dispatch(setMSAuthResult(authResult));
-        setAuthPending(false);
-        navigate('/loading');
+  const handleAuthClick = useCallback(async () => {
+    if (inProgress === InteractionStatus.None) {
+      if (!isAuthenticated) {
+        instance
+          .loginRedirect({
+            ...loginRequest,
+            redirectStartPage: targetUrl,
+          })
+          .catch(console.error);
       } else {
-        setAuthPending(false);
-        setErrorMessage('Authentication failed');
+        const urlObj = { pathname: targetPage, query };
+        console.log('redirecting to:', urlObj);
+        navigate(urlObj);
       }
-    } catch (error) {
-      console.log(error);
-      setAuthPending(false);
-      setErrorMessage('Authentication failed');
     }
-
-    setAuthPending(false);
-  }, [dispatch, navigate]);
+  }, [
+    inProgress,
+    instance,
+    isAuthenticated,
+    navigate,
+    query,
+    targetPage,
+    targetUrl,
+  ]);
 
   return (
     <Container
@@ -91,15 +93,11 @@ function MSLogin() {
           src={teraphoneLogo}
           sx={{ height: 112, width: 'auto' }}
         />
-        <MSSignInLoadingButton
-          loading={authPending}
-          onClick={handleAuthClick}
-        />
-        {errorMessage && <Alert severity="error">{errorMessage}</Alert>}
+        <MSSignInLoadingButton loading={false} onClick={handleAuthClick} />
       </Box>
       <LoginFooter />
     </Container>
   );
-}
+};
 
 export default MSLogin;

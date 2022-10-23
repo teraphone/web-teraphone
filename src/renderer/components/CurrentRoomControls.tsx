@@ -6,8 +6,8 @@ import {
   Tooltip,
   Typography,
   CircularProgress,
-  Button,
 } from '@mui/material';
+import { LoadingButton } from '@mui/lab';
 import VideoCameraFrontIcon from '@mui/icons-material/VideoCameraFront';
 import VideocamOffIcon from '@mui/icons-material/VideocamOff';
 import ScreenShareIcon from '@mui/icons-material/ScreenShare';
@@ -27,21 +27,24 @@ import {
 } from '../redux/ConnectionStatusSlice';
 import { useAppSelector, useAppDispatch } from '../redux/hooks';
 import { selectCurrentRoom } from '../redux/CurrentRoomSlice';
-import { selectIsSharing, setPickerVisible } from '../redux/ScreenShareSlice';
+import { selectIsSharing, setIsSharing } from '../redux/ScreenShareSlice';
 import '../lib/ExtendedLocalParticipant';
 import useVideoItems from '../hooks/useVideoItems';
+import { ScreenShareCaptureOptions, VideoPresets } from 'livekit-client';
 
 const ShareCameraButton = (props: {
   status: ConnectionStatus;
   onClick: () => void;
   isSharing: boolean;
+  isLoading: boolean;
 }) => {
-  const { status, onClick, isSharing } = props;
+  const { status, onClick, isSharing, isLoading } = props;
   const tooltip = isSharing ? 'Stop sharing camera' : 'Share camera';
   return (
     <Tooltip title={tooltip} placement="top" arrow sx={{ flexGrow: 1 }}>
       <span>
-        <Button
+        <LoadingButton
+          loading={isLoading}
           disabled={status !== ConnectionStatus.Connected}
           disableElevation
           fullWidth
@@ -53,7 +56,7 @@ const ShareCameraButton = (props: {
           color={isSharing ? 'success' : 'primary'}
         >
           Camera
-        </Button>
+        </LoadingButton>
       </span>
     </Tooltip>
   );
@@ -63,12 +66,14 @@ const ShareScreenButton = (props: {
   status: ConnectionStatus;
   onClick: () => void;
   isSharing: boolean;
+  isLoading: boolean;
 }) => {
-  const { status, onClick, isSharing } = props;
+  const { status, onClick, isSharing, isLoading } = props;
   return (
     <Tooltip title="Share Screens" placement="top" arrow>
       <span>
-        <Button
+        <LoadingButton
+          loading={isLoading}
           disabled={status !== ConnectionStatus.Connected}
           disableElevation
           fullWidth
@@ -78,8 +83,8 @@ const ShareScreenButton = (props: {
           variant="contained"
           color={isSharing ? 'success' : 'primary'}
         >
-          Screens
-        </Button>
+          Screen
+        </LoadingButton>
       </span>
     </Tooltip>
   );
@@ -137,9 +142,12 @@ function CurentRoomControls() {
   const isCameraShare = useAppSelector(selectCameraIsSharing);
   const isScreenShare = useAppSelector(selectIsSharing);
   const { setUpVideoTrack } = useVideoItems();
+  const [cameraLoading, setCameraLoading] = React.useState(false);
+  const [screenLoading, setScreenLoading] = React.useState(false);
 
   const handleShareCameraClick = React.useCallback(async () => {
     if (room?.localParticipant) {
+      setCameraLoading(true);
       try {
         const localTrackPub = await room?.localParticipant.setCameraEnabled(
           !isCameraShare
@@ -151,12 +159,29 @@ function CurentRoomControls() {
       } catch (error) {
         console.error(error);
       }
+      setCameraLoading(false);
     }
   }, [dispatch, isCameraShare, room?.localParticipant, setUpVideoTrack]);
 
-  const handleShareScreenClick = React.useCallback(() => {
-    dispatch(setPickerVisible(true));
-  }, [dispatch]);
+  const handleShareScreenClick = React.useCallback(async () => {
+    if (room?.localParticipant) {
+      setScreenLoading(true);
+      try {
+        const localTrackPub =
+          await room?.localParticipant.setScreenShareEnabled(!isScreenShare, {
+            audio: false,
+            resolution: VideoPresets.h2160,
+          } as ScreenShareCaptureOptions);
+        dispatch(setIsSharing(!isScreenShare));
+        if (!isScreenShare && localTrackPub) {
+          setUpVideoTrack(localTrackPub, room.localParticipant);
+        }
+      } catch (error) {
+        console.error(error);
+      }
+      setScreenLoading(false);
+    }
+  }, [dispatch, isScreenShare, room?.localParticipant, setUpVideoTrack]);
 
   const handleDisconnectClick = React.useCallback(async () => {
     if (!room) {
@@ -249,6 +274,7 @@ function CurentRoomControls() {
             status={connectionStatus}
             onClick={handleShareCameraClick}
             isSharing={isCameraShare}
+            isLoading={cameraLoading}
           />
         </Box>
         <Box sx={{ flexGrow: 1 }}>
@@ -256,6 +282,7 @@ function CurentRoomControls() {
             status={connectionStatus}
             onClick={handleShareScreenClick}
             isSharing={isScreenShare}
+            isLoading={screenLoading}
           />
         </Box>
       </Box>

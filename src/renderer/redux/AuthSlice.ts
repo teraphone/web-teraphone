@@ -1,5 +1,5 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
-import type { AuthenticationResult } from '@azure/msal-node';
+import { AuthenticationResult } from '@azure/msal-browser';
 import type { RootState } from './store';
 
 type AuthState = {
