@@ -111,7 +111,12 @@ const Loading = () => {
         instance
           .acquireTokenSilent({ scopes: teraphoneAppScopes })
           .then((authResult) => dispatch(setMSAuthResult(authResult)))
-          .catch(console.error);
+          .catch(() => {
+            instance.logoutRedirect({
+              postLogoutRedirectUri: '/',
+              onRedirectNavigate: () => false,
+            });
+          });
       }
     }
   }, [
