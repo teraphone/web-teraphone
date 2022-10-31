@@ -1,6 +1,6 @@
 import { useIsAuthenticated, useMsal } from '@azure/msal-react';
 import { InteractionStatus } from '@azure/msal-browser';
-import { loginRequest, BASE_URI } from '../ms-auth/authConfig';
+import { teraphoneAppScopes, BASE_URI } from '../ms-auth/authConfig';
 import { useEffect, useCallback } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { Box, Container, CssBaseline } from '@mui/material';
@@ -22,7 +22,9 @@ const MSLogin = () => {
   useEffect(() => {
     if (inProgress === InteractionStatus.None) {
       if (!isAuthenticated) {
-        instance.acquireTokenSilent(loginRequest).catch(console.error);
+        instance
+          .acquireTokenSilent({ scopes: teraphoneAppScopes })
+          .catch(console.error);
       } else {
         const urlObj = { pathname: targetPage, query };
         console.log('redirecting to:', urlObj);
@@ -44,7 +46,7 @@ const MSLogin = () => {
       if (!isAuthenticated) {
         instance
           .loginRedirect({
-            ...loginRequest,
+            scopes: teraphoneAppScopes,
             redirectStartPage: targetUrl,
           })
           .catch(console.error);
