@@ -105,7 +105,7 @@ const Loading = () => {
           query: { ...queryParams },
         };
         console.log('not authenticated, redirecting to:', urlObj);
-        // navigate(urlObj);
+        navigate(urlObj);
       } else {
         console.log('is authenticated');
         instance
