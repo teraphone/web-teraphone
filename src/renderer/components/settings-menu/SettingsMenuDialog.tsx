@@ -58,7 +58,7 @@ function AccountPanel() {
     try {
       await room?.disconnect();
       dispatch(signedOut);
-      await instance.logout();
+      await instance.logoutRedirect();
       dispatch(setIsVisible(false));
       navigate('/?signedOut');
     } catch (error) {
