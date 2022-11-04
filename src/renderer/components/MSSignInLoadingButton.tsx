@@ -1,7 +1,6 @@
-import { Icon, useTheme } from '@mui/material';
+import { SvgIcon, useTheme } from '@mui/material';
 import LoadingButton from '@mui/lab/LoadingButton';
 import { SxProps } from '@mui/system';
-import microsoftLogo from '../../images/microsoft-logo.svg';
 
 function MSSignInLoadingButton({
   children = 'Sign in with Microsoft',
@@ -24,9 +23,20 @@ function MSSignInLoadingButton({
       loading={loading}
       onClick={onClick}
       startIcon={
-        <Icon>
-          <img alt="Microsoft logo" src={microsoftLogo} />
-        </Icon>
+        <SvgIcon inheritViewBox>
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            width="21"
+            height="21"
+            viewBox="0 0 21 21"
+          >
+            <title>MS-SymbolLockup</title>
+            <rect x="1" y="1" width="9" height="9" fill="#f25022" />
+            <rect x="1" y="11" width="9" height="9" fill="#00a4ef" />
+            <rect x="11" y="1" width="9" height="9" fill="#7fba00" />
+            <rect x="11" y="11" width="9" height="9" fill="#ffb900" />
+          </svg>
+        </SvgIcon>
       }
       sx={{
         backgroundColor: '#fff',

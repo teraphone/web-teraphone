@@ -105,13 +105,18 @@ const Loading = () => {
           query: { ...queryParams },
         };
         console.log('not authenticated, redirecting to:', urlObj);
-        // navigate(urlObj);
+        navigate(urlObj);
       } else {
         console.log('is authenticated');
         instance
           .acquireTokenSilent({ scopes: teraphoneAppScopes })
           .then((authResult) => dispatch(setMSAuthResult(authResult)))
-          .catch(console.error);
+          .catch(() => {
+            instance.logoutRedirect({
+              postLogoutRedirectUri: '/',
+              onRedirectNavigate: () => false,
+            });
+          });
       }
     }
   }, [
