@@ -55,6 +55,8 @@ const LicenseCheck = () => {
     }
     if (!isTrialActive) {
       console.log('trial is not active, start trial?');
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      (window as any).lintrk('track', { conversion_id: 11468057 });
       setCanStartTrial(true);
     }
   }, [isSubscriptionActive, isTrialActive, isTrialExpired, navigate]);
