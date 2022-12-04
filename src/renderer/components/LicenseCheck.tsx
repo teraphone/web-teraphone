@@ -55,8 +55,13 @@ const LicenseCheck = () => {
     }
     if (!isTrialActive) {
       console.log('trial is not active, start trial?');
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      (window as any).lintrk('track', { conversion_id: 11468057 });
+      
+      try {
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        (window as any).lintrk?.('track', { conversion_id: 11468057 });
+      } catch (error) {
+        console.log('LinkedIn conversion event failed', error);
+      }
       setCanStartTrial(true);
     }
   }, [isSubscriptionActive, isTrialActive, isTrialExpired, navigate]);
